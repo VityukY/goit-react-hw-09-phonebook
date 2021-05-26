@@ -1,8 +1,9 @@
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import LogoutBtn from './LogoutBtn';
 import { getUserName } from '../redux/auth/auth-selectors';
 
-const RegistredMenu = ({ userName }) => {
+export default function RegistredMenu() {
+   const userName = useSelector(getUserName);
    return (
       <>
          <p>{`Привет ${userName}`} </p>
@@ -10,9 +11,4 @@ const RegistredMenu = ({ userName }) => {
          <LogoutBtn />
       </>
    );
-};
-
-const mapStateToProps = state => ({
-   userName: getUserName(state),
-});
-export default connect(mapStateToProps)(RegistredMenu);
+}

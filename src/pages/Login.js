@@ -1,43 +1,48 @@
-import { Component } from 'react';
-import { connect } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import * as operations from '../redux/auth/auth-operations';
-class Login extends Component {
-   state = {
-      email: '',
-      password: '',
+
+export default function Login() {
+   const dispatch = useDispatch();
+
+   const [email, setEmail] = useState();
+
+   const emailHandler = e => {
+      setEmail(e.target.value);
+   };
+   const [password, setPassword] = useState();
+
+   const passwordHandler = e => {
+      setPassword(e.target.value);
    };
 
-   onChange = e => {
-      this.setState({ [e.target.name]: e.target.value });
-   };
-   onSubmit = e => {
+   const onSubmit = e => {
       e.preventDefault();
-      this.props.signIn(this.state);
+      dispatch(operations.login({ email, password }));
    };
-   render() {
-      return (
-         <>
-            <h1> Login page</h1>
-            <form onSubmit={this.onSubmit}>
-               <input
-                  value={this.state.email}
-                  name="email"
-                  onChange={this.onChange}
-               />
 
-               <input
-                  value={this.state.password}
-                  name="password"
-                  onChange={this.onChange}
-               />
+   return (
+      <>
+         <h1> Login page</h1>
+         <form onSubmit={e => onSubmit(e)}>
+            <input
+               value={email}
+               name="email"
+               onChange={e => {
+                  emailHandler(e);
+               }}
+            />
 
-               <button type="submit">Login</button>
-            </form>
-         </>
-      );
-   }
+            <input
+               value={password}
+               name="password"
+               onChange={e => {
+                  passwordHandler(e);
+               }}
+            />
+
+            <button type="submit">Login</button>
+         </form>
+      </>
+   );
 }
-const mapDispatchToProps = {
-   signIn: operations.login,
-};
-export default connect(null, mapDispatchToProps)(Login);

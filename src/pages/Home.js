@@ -1,9 +1,10 @@
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { isAuthenticated } from '../redux/auth/auth-selectors';
 import UnregistredMenu from '../Components/UnregisteredMenu';
 import LogoutBtn from '../Components/LogoutBtn';
 
-const Home = ({ isSignIn }) => {
+export default function Home() {
+   const isSignIn = useSelector(isAuthenticated);
    return (
       <>
          {!isSignIn && (
@@ -27,10 +28,4 @@ const Home = ({ isSignIn }) => {
          )}
       </>
    );
-};
-
-const mapStateToProps = state => ({
-   isSignIn: isAuthenticated(state),
-});
-
-export default connect(mapStateToProps, null)(Home);
+}

@@ -1,50 +1,67 @@
-import { Component } from 'react';
-import { connect } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import * as operations from '../redux/auth/auth-operations';
-class Registarion extends Component {
-   state = {
-      name: '',
-      email: '',
-      password: '',
+
+export default function Registarion() {
+   const dispatch = useDispatch();
+
+   const [email, setEmail] = useState();
+
+   const emailHandler = e => {
+      setEmail(e.target.value);
    };
-   onChange = e => {
-      this.setState({ [e.target.name]: e.target.value });
+
+   const [password, setPassword] = useState();
+
+   const passwordHandler = e => {
+      setPassword(e.target.value);
    };
-   onSubmit = e => {
+
+   const [name, setName] = useState();
+
+   const nameHandler = e => {
+      setName(e.target.value);
+   };
+
+   const onSubmit = e => {
       e.preventDefault();
-      this.props.signUp(this.state);
+
+      dispatch(operations.registration({ name, email, password }));
    };
-   render() {
-      return (
-         <>
-            <h1> Registarion page</h1>
-            <form onSubmit={this.onSubmit}>
-               <input
-                  value={this.state.name}
-                  name="name"
-                  onChange={this.onChange}
-               />
 
-               <input
-                  value={this.state.email}
-                  name="email"
-                  onChange={this.onChange}
-               />
+   return (
+      <>
+         <h1> Registarion page</h1>
+         <form onSubmit={onSubmit}>
+            <input
+               placeholder="name"
+               value={name}
+               name="name"
+               onChange={e => {
+                  nameHandler(e);
+               }}
+            />
 
-               <input
-                  value={this.state.password}
-                  name="password"
-                  onChange={this.onChange}
-               />
+            <input
+               placeholder="email"
+               value={email}
+               name="email"
+               onChange={e => {
+                  emailHandler(e);
+               }}
+            />
 
-               <button type="submit">Sing Up</button>
-            </form>
-         </>
-      );
-   }
+            <input
+               placeholder="password"
+               value={password}
+               name="password"
+               onChange={e => {
+                  passwordHandler(e);
+               }}
+            />
+
+            <button type="submit">Sing Up</button>
+         </form>
+      </>
+   );
 }
-
-const mapDispatchToProps = {
-   signUp: operations.registration,
-};
-export default connect(null, mapDispatchToProps)(Registarion);

@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
 import routes from '../routs';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { isAuthenticated } from '../redux/auth/auth-selectors';
 import UnregisteredMenu from './UnregisteredMenu';
 import RegistredMenu from './registeredMenu';
 
-const Navigation = ({ isLogin }) => {
+export default function Navigation() {
+   const isLogin = useSelector(isAuthenticated);
    return (
       <nav className="linkList">
          <NavLink to={routes.home} className="" activeClassName="">
@@ -17,10 +18,4 @@ const Navigation = ({ isLogin }) => {
          {isLogin ? <RegistredMenu /> : <UnregisteredMenu />}
       </nav>
    );
-};
-
-const mapStateToProps = state => ({
-   isLogin: isAuthenticated(state),
-});
-
-export default connect(mapStateToProps, null)(Navigation);
+}

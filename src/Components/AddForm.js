@@ -1,19 +1,26 @@
-import { Component } from 'react';
-import { connect } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import * as selectors from '../redux/contacts/contacts-selectors.js';
 import * as operation from '../redux/contacts/contact-operations';
 import shortid from 'shortid';
 
-class Form extends Component {
-   state = {
-      name: '',
-      number: '',
+export default function Form() {
+   const dispatch = useDispatch();
+   const contacts = useSelector(selectors.getContact);
+
+   const [name, setName] = useState('');
+   const nameHandler = e => {
+      setName(e.currentTarget.value);
+   };
+   const [number, setNumber] = useState('');
+   const numberHandler = e => {
+      setNumber(e.currentTarget.value);
    };
 
-   updateContacts = e => {
+   const updateContacts = e => {
       e.preventDefault();
-      const { name, number } = this.state;
-      if (this.checkDuplicates(name)) {
+
+      if (checkDuplicates(name)) {
          alert(`${name} уже в списке`);
          return;
       }
@@ -22,72 +29,52 @@ class Form extends Component {
          number,
          id: shortid.generate(),
       };
-      this.props.addContact(newContact);
-      this.reset();
+      dispatch(operation.addContact(newContact));
+      reset();
    };
 
-   checkDuplicates = name => {
-      const currentContactsName = this.props.contacts.map(
-         contact => contact.name,
-      );
+   const checkDuplicates = name => {
+      const currentContactsName = contacts.map(contact => contact.name);
       return currentContactsName.includes(name);
    };
 
-   changeHadler = e => {
-      this.setState({ [e.currentTarget.name]: e.currentTarget.value });
+   const reset = () => {
+      setName('');
+      setNumber('');
    };
-   reset() {
-      this.setState({ name: '', number: '' });
-   }
 
-   render() {
-      return (
-         <form onSubmit={this.updateContacts} className="phonebook_form">
-            <div className="phonebook__inputarea">
-               <label>
-                  <h2>Name</h2>
-                  <input
-                     value={this.state.name}
-                     type="text"
-                     name="name"
-                     onChange={this.changeHadler}
-                     pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-                     title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
-                     required
-                  />
-               </label>
+   return (
+      <form onSubmit={updateContacts} className="phonebook_form">
+         <div className="phonebook__inputarea">
+            <label>
+               <h2>Name</h2>
+               <input
+                  value={name}
+                  type="text"
+                  name="name"
+                  onChange={e => nameHandler(e)}
+                  pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+                  title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
+                  required
+               />
+            </label>
 
-               <label>
-                  <h2>Number</h2>
-                  <input
-                     value={this.state.number}
-                     type="tel"
-                     name="number"
-                     onChange={this.changeHadler}
-                     pattern="(\+?( |-|\.)?\d{1,2}( |-|\.)?)?(\(?\d{3}\)?|\d{3})( |-|\.)?(\d{3}( |-|\.)?\d{4})"
-                     title="Номер телефона должен состоять из 11-12 цифр и может содержать цифры, пробелы, тире, пузатые скобки и может начинаться с +"
-                     required
-                  />
-               </label>
-            </div>
-            <button type="submit" className="phonebook__addButton">
-               Add contact
-            </button>
-         </form>
-      );
-   }
+            <label>
+               <h2>Number</h2>
+               <input
+                  value={number}
+                  type="tel"
+                  name="number"
+                  onChange={e => numberHandler(e)}
+                  pattern="(\+?( |-|\.)?\d{1,2}( |-|\.)?)?(\(?\d{3}\)?|\d{3})( |-|\.)?(\d{3}( |-|\.)?\d{4})"
+                  title="Номер телефона должен состоять из 11-12 цифр и может содержать цифры, пробелы, тире, пузатые скобки и может начинаться с +"
+                  required
+               />
+            </label>
+         </div>
+         <button type="submit" className="phonebook__addButton">
+            Add contact
+         </button>
+      </form>
+   );
 }
-
-const mapStateToProps = state => {
-   return {
-      contacts: selectors.getContact(state),
-   };
-};
-
-const mapDispatchToProps = dispatch => {
-   return {
-      addContact: newContact => dispatch(operation.addContact(newContact)),
-   };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Form);
